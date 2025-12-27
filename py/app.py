@@ -325,7 +325,7 @@ def get_weather():
     city = request.args.get('city', 'Moscow')
     url = f"https://api.openweathermap.org/data/2.5/forecast?q={city}&appid={OPENWEATHER_KEY}&units=metric&lang=ru"
     try:
-        response = requests.get(url)
+        response = requests.get(url, verify=False, timeout=5)
         return jsonify(response.json())
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -337,7 +337,7 @@ def get_currency():
     target = request.args.get('to', 'RUB')
     url = f"https://hexarate.paikama.co/api/rates/latest/{base}?target={target}"
     try:
-        response = requests.get(url)
+        response = requests.get(url, verify=False, timeout=5)
         data = response.json()
         if response.status_code == 200:
             return jsonify(data)
