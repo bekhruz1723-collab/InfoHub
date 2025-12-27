@@ -1,0 +1,130 @@
+{% extends "base.html" %} {% block content %}
+<div class="dashboard-grid">
+	<div class="main-col">
+		<div class="glass-card" style="margin-bottom: 20px; text-align: center">
+			<img
+				src="{{ url_for('static', filename='uploads/' + user.avatar) }}"
+				style="
+					width: 120px;
+					height: 120px;
+					border-radius: 50%;
+					object-fit: cover;
+					border: 4px solid var(--accent-color);
+				"
+			/>
+			<h1 style="margin: 10px 0 5px">{{ user.username }}</h1>
+			<p style="opacity: 0.7">@{{ user.nickname }}</p>
+
+			<div
+				style="
+					display: grid;
+					grid-template-columns: 1fr 1fr;
+					gap: 15px;
+					max-width: 400px;
+					margin: 20px auto 0;
+				"
+			>
+				<div
+					style="
+						background: rgba(0, 0, 0, 0.2);
+						padding: 10px;
+						border-radius: 8px;
+					"
+				>
+					<div style="font-size: 0.8em; opacity: 0.7">Возраст</div>
+					<div style="font-weight: bold">
+						{{ user.age if user.age else '-' }}
+					</div>
+				</div>
+				<div
+					style="
+						background: rgba(0, 0, 0, 0.2);
+						padding: 10px;
+						border-radius: 8px;
+					"
+				>
+					<div style="font-size: 0.8em; opacity: 0.7">Пол</div>
+					<div style="font-weight: bold">
+						{% if user.gender == 'Male' %}Мужской {% elif user.gender ==
+						'Female' %}Женский {% else %}-{% endif %}
+					</div>
+				</div>
+			</div>
+
+			{% if user.bio %}
+			<p style="margin-top: 20px; font-style: italic">"{{ user.bio }}"</p>
+			{% endif %}
+		</div>
+
+		{% if tasks %}
+		<div class="glass-card">
+			<h3>📂 Публичные задачи</h3>
+			{% for task in tasks %}
+			<div class="task-item">
+				<div class="task-header">
+					<span style="font-weight: bold">{{ task.title }}</span>
+					{% if task.deadline %}
+					<span style="font-size: 0.8em; opacity: 0.7"
+						>{{ task.deadline.strftime('%d.%m.%Y') }}</span
+					>
+					{% endif %}
+				</div>
+				<div class="task-progress-bar">
+					<div
+						class="task-progress-fill"
+						style="width: {{ task.progress }}%;"
+					></div>
+				</div>
+				{% if task.completed %}
+				<div
+					style="
+						text-align: right;
+						font-size: 0.8em;
+						color: var(--success-color);
+						margin-top: 5px;
+					"
+				>
+					Завершено
+				</div>
+				{% endif %}
+			</div>
+			{% endfor %}
+		</div>
+		{% endif %}
+	</div>
+
+	<div class="widgets-col">
+		<div class="glass-card">
+			<h3>📊 Продуктивность {{ user.username }}</h3>
+			{% if graphJSON and graphJSON != 'null' %}
+			<div id="chart" style="width: 100%; height: 250px"></div>
+			<script>
+				var graphs = {{ graphJSON | safe }};
+				Plotly.newPlot('chart', graphs.data, graphs.layout, {displayModeBar: false});
+			</script>
+			{% else %}
+			<div
+				style="
+					height: 150px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					background: rgba(0, 0, 0, 0.2);
+					border-radius: 12px;
+					color: rgba(255, 255, 255, 0.4);
+				"
+			>
+				Нет данных
+			</div>
+			{% endif %}
+		</div>
+
+		<div class="glass-card">
+			<h3>🎯 Цели</h3>
+			<p style="white-space: pre-wrap">
+				{{ user.goals if user.goals else 'Пользователь скрыл свои цели.' }}
+			</p>
+		</div>
+	</div>
+</div>
+{% endblock %}

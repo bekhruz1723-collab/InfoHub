@@ -1,0 +1,81 @@
+{% extends "base.html" %} {% block content %}
+<div style="width: 100%">
+	<div
+		class="glass-card"
+		style="margin-bottom: 20px; width: 100%; box-sizing: border-box"
+	>
+		<h2>🔍 Поиск пользователей</h2>
+		<div style="position: relative">
+			<input
+				type="text"
+				id="searchInput"
+				placeholder="Начните вводить ник или имя..."
+				style="margin-bottom: 0; width: 100%; padding: 15px; font-size: 1.1em"
+				autofocus
+			/>
+		</div>
+	</div>
+
+	<div
+		class="glass-card"
+		id="resultsContainer"
+		style="display: none; width: 100%; box-sizing: border-box"
+	>
+		<h3>Результаты поиска:</h3>
+		<div
+			id="resultsList"
+			style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px"
+		></div>
+	</div>
+</div>
+
+<script>
+	let timeout = null;
+	const input = document.getElementById("searchInput");
+	const container = document.getElementById("resultsContainer");
+	const list = document.getElementById("resultsList");
+
+	input.addEventListener("input", function () {
+		clearTimeout(timeout);
+		const query = this.value;
+
+		if (query.length === 0) {
+			container.style.display = "none";
+			return;
+		}
+
+		timeout = setTimeout(async () => {
+			const response = await fetch(`/api/search?q=${query}`);
+			const users = await response.json();
+
+			list.innerHTML = "";
+			if (users.length > 0) {
+				users.forEach((user) => {
+					const div = document.createElement("div");
+					// Используем стиль похожий на task-item но больше
+					div.className = "glass-card";
+					div.style =
+						"display: flex; gap: 20px; align-items: flex-start; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); padding: 20px;";
+
+					div.innerHTML = `
+                        <img src="/static/uploads/${user.avatar}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-color);">
+                        <div style="flex-grow: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                                <div style="font-weight: bold; font-size: 1.3em">${user.username}</div>
+                                <a href="/u/${user.nickname}" class="btn-primary" style="text-decoration: none; font-size: 0.9em; padding: 8px 16px;">Перейти в профиль</a>
+                            </div>
+                            <div style="opacity: 0.7; font-size: 1em; color: var(--accent-color); margin-bottom: 10px;">@${user.nickname}</div>
+                            <div style="opacity: 0.8; font-size: 0.95em; font-style: italic;">"${user.bio}"</div>
+                        </div>
+                    `;
+					list.appendChild(div);
+				});
+				container.style.display = "block";
+			} else {
+				list.innerHTML = "<p>Никого не найдено :(</p>";
+				container.style.display = "block";
+			}
+		}, 300);
+	});
+</script>
+{% endblock %}

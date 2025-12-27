@@ -1,0 +1,136 @@
+{% extends "base.html" %} {% block content %}
+<div class="glass-card" style="max-width: 600px; margin: 0 auto">
+	<form method="POST" enctype="multipart/form-data">
+		<div style="text-align: center; margin-bottom: 20px">
+			<div class="file-upload-wrapper">
+				<img
+					src="{{ url_for('static', filename='uploads/' + user.avatar) }}"
+					id="avatarPreview"
+					style="
+						width: 120px;
+						height: 120px;
+						border-radius: 50%;
+						object-fit: cover;
+						border: 3px solid var(--accent-color);
+						margin-bottom: 10px;
+					"
+				/>
+				<br />
+				<label for="avatarInput" class="file-upload-label">📸 Изменить</label>
+				<input
+					type="file"
+					name="avatar"
+					id="avatarInput"
+					style="display: none"
+					onchange="document.getElementById('avatarPreview').src = window.URL.createObjectURL(this.files[0])"
+				/>
+			</div>
+
+			<h2>{{ user.username }}</h2>
+			<p style="opacity: 0.7">@{{ user.nickname }}</p>
+		</div>
+
+		<label>Имя пользователя</label>
+		<input type="text" name="username" value="{{ user.username }}" />
+
+		<label>О себе</label>
+		<textarea name="bio" rows="3">{{ user.bio or '' }}</textarea>
+
+		<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
+			<div>
+				<label>Возраст</label>
+				<input
+					type="number"
+					name="age"
+					value="{{ user.age or '' }}"
+					placeholder="Не указано"
+				/>
+			</div>
+			<div>
+				<label>Пол</label>
+				<select name="gender">
+					<option value="" {% if not user.gender %}selected{% endif %}>
+						Не указано
+					</option>
+					<option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>
+						Мужской
+					</option>
+					<option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>
+						Женский
+					</option>
+				</select>
+			</div>
+		</div>
+
+		<label>Цели</label>
+		<textarea name="goals" placeholder="Мои глобальные цели...">
+{{ user.goals or '' }}</textarea
+		>
+
+		<button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px">
+			Сохранить изменения
+		</button>
+	</form>
+
+	<div
+		style="
+			margin-top: 40px;
+			padding-top: 20px;
+			border-top: 1px solid rgba(255, 255, 255, 0.1);
+			display: flex;
+			flex-direction: column;
+			gap: 15px;
+		"
+	>
+		<a
+			href="{{ url_for('logout') }}"
+			class="btn-outline"
+			style="
+				text-align: center;
+				text-decoration: none;
+				display: block;
+			"
+			>Выйти из аккаунта</a
+		>
+
+		<button
+			onclick="openDeleteModal()"
+			class="btn-danger"
+			style="width: 100%"
+		>
+			Удалить профиль
+		</button>
+	</div>
+</div>
+
+<div id="deleteModal" class="modal-overlay">
+	<div class="modal-content animate-modal">
+		<h2 style="color: var(--danger-color)">Удаление аккаунта</h2>
+		<p>
+			Вы уверены? Это действие <b>необратимо</b> удалит ваш профиль и все задачи.
+		</p>
+		<div class="modal-actions">
+			<button
+				class="btn-primary"
+				style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white"
+				onclick="closeDeleteModal()"
+			>
+				Отмена
+			</button>
+			<form action="{{ url_for('delete_account') }}" method="POST">
+				<button type="submit" class="btn-danger">Да, удалить</button>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script>
+	function openDeleteModal() {
+		const modal = document.getElementById("deleteModal");
+		modal.style.display = "flex";
+	}
+	function closeDeleteModal() {
+		document.getElementById("deleteModal").style.display = "none";
+	}
+</script>
+{% endblock %}

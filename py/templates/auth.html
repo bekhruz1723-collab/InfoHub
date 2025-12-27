@@ -1,0 +1,63 @@
+{% extends "base.html" %} {% block content %}
+<div
+	style="
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		min-height: 70vh;
+	"
+>
+	<div
+		class="glass-card"
+		style="width: 100%; max-width: 400px; text-align: center"
+	>
+		<h2 style="margin-bottom: 20px">
+			{{ 'Регистрация' if mode == 'register' else 'Вход' }}
+		</h2>
+
+		<form method="POST" action="">
+			{% if mode == 'register' %}
+			<input
+				type="text"
+				name="username"
+				placeholder="Как вас зовут?"
+				required
+			/>
+			{% endif %}
+
+			<input
+				type="text"
+				name="nickname"
+				placeholder="Никнейм (только латиница)"
+				required
+			/>
+			<input
+				type="password"
+				name="password"
+				placeholder="Пароль (мин. 8 символов)"
+				required
+			/>
+
+			<button
+				type="submit"
+				class="btn-primary"
+				style="width: 100%; margin-top: 10px"
+			>
+				{{ 'Создать аккаунт' if mode == 'register' else 'Войти' }}
+			</button>
+		</form>
+
+		<div style="margin-top: 20px; font-size: 0.9em">
+			{% if mode == 'register' %} Уже есть аккаунт?
+			<a href="{{ url_for('login') }}" style="color: var(--accent-color)"
+				>Войти</a
+			>
+			{% else %} Нет аккаунта?
+			<a href="{{ url_for('register') }}" style="color: var(--accent-color)"
+				>Зарегистрироваться</a
+			>
+			{% endif %}
+		</div>
+	</div>
+</div>
+{% endblock %}
