@@ -335,7 +335,7 @@ def get_weather():
 def get_currency():
     base = request.args.get('from', 'USD')
     target = request.args.get('to', 'RUB')
-    url = f"http://hexarate.paikama.co/api/rates/latest/{base}?target={target}"
+    url = f"https://hexarate.paikama.co/api/rates/latest/{base}?target={target}"
     try:
         response = requests.get(url)
         data = response.json()
