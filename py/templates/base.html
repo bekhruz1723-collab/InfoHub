@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>InfoHuby</title>
+		<link
+			rel="stylesheet"
+			href="{{ url_for('static', filename='css/style.css') }}"
+		/>
+		<link
+			rel="icon"
+			href="{{ url_for('static', filename='uploads/logo.png') }}"
+			type="image/png"
+		/>
+		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<nav class="glass-card">
+				<a href="{{ url_for('dashboard') }}" class="logo-container">
+					<img
+						src="{{ url_for('static', filename='uploads/logo.png') }}"
+						alt="Logo"
+						style="height: 40px; width: auto"
+						onerror="this.style.display='none'"
+					/>
+					<div class="site-title">InfoHuby</div>
+				</a>
+				<div class="nav-links">
+					{% if current_user.is_authenticated %}
+					<a
+						href="{{ url_for('dashboard') }}"
+						class="{{ 'active' if request.endpoint == 'dashboard' else '' }}"
+						>Главная</a
+					>
+					<a
+						href="{{ url_for('search') }}"
+						class="{{ 'active' if request.endpoint == 'search' else '' }}"
+						>Поиск</a
+					>
+					<a
+						href="{{ url_for('profile') }}"
+						class="{{ 'active' if request.endpoint == 'profile' else '' }}"
+						>Профиль</a
+					>
+					<button
+						id="theme-toggle"
+						class="theme-btn"
+						title="Переключить тему"
+						onclick="toggleTheme()"
+					>
+						<svg
+							id="icon-sun"
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						>
+							<circle cx="12" cy="12" r="5"></circle>
+							<line x1="12" y1="1" x2="12" y2="3"></line>
+							<line x1="12" y1="21" x2="12" y2="23"></line>
+							<line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+							<line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+							<line x1="1" y1="12" x2="3" y2="12"></line>
+							<line x1="21" y1="12" x2="23" y2="12"></line>
+							<line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+							<line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+						</svg>
+						<svg
+							id="icon-moon"
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							style="display: none"
+						>
+							<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+						</svg>
+					</button>
+					{% else %}
+					<a
+						href="{{ url_for('login') }}"
+						class="{{ 'active' if request.endpoint == 'login' else '' }}"
+						>Вход</a
+					>
+					<a
+						href="{{ url_for('register') }}"
+						class="{{ 'active' if request.endpoint == 'register' else '' }}"
+						>Регистрация</a
+					>
+					{% endif %}
+				</div>
+			</nav>
+
+			{% with messages = get_flashed_messages(with_categories=true) %} {% if
+			messages %} {% for category, message in messages %}
+			<div
+				class="glass-card"
+				style="margin-bottom: 20px; border-left: 4px solid {{ '#ef4444' if category == 'danger' else '#10b981' }}; padding: 15px;"
+			>
+				{{ message }}
+			</div>
+			{% endfor %} {% endif %} {% endwith %} {% block content %}{% endblock %}
+		</div>
+
+		<script>
+			// Логика темы
+			function toggleTheme() {
+				const body = document.body;
+				const isLight = body.getAttribute("data-theme") === "light";
+				if (isLight) {
+					body.removeAttribute("data-theme");
+					localStorage.setItem("theme", "dark");
+					updateIcon(false);
+				} else {
+					body.setAttribute("data-theme", "light");
+					localStorage.setItem("theme", "light");
+					updateIcon(true);
+				}
+				// Перерисовка графиков Plotly при смене темы (чтобы обновились шрифты/цвета если настроено)
+				if (typeof Plotly !== "undefined") {
+					const chart = document.getElementById("chart");
+					if (chart) {
+						const layout = chart.layout;
+						// Просто релаин, Plotly подхватит прозрачный фон, но цвет текста может потребоваться обновить явно
+						Plotly.relayout(chart, {});
+					}
+				}
+			}
+
+			function updateIcon(isLight) {
+				const sun = document.getElementById("icon-sun");
+				const moon = document.getElementById("icon-moon");
+				if (!sun || !moon) return;
+
+				if (isLight) {
+					sun.style.display = "none";
+					moon.style.display = "block";
+				} else {
+					sun.style.display = "block";
+					moon.style.display = "none";
+				}
+			}
+
+			// Инициализация при загрузке
+			(function () {
+				const savedTheme = localStorage.getItem("theme");
+				if (savedTheme === "light") {
+					document.body.setAttribute("data-theme", "light");
+					// Ждем загрузки DOM для иконок
+					document.addEventListener("DOMContentLoaded", () => updateIcon(true));
+				} else {
+					document.addEventListener("DOMContentLoaded", () =>
+						updateIcon(false)
+					);
+				}
+			})();
+		</script>
+	</body>
+</html>

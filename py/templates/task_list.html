@@ -1,0 +1,67 @@
+{% for task in tasks %}
+<div class="task-item" id="task-{{ task.id }}">
+	<div class="task-header">
+		<div
+			style="
+				font-weight: bold;
+				font-size: 1.1em;
+				display: flex;
+				align-items: center;
+				gap: 10px;
+			"
+		>
+			{{ task.title }} {% if task.is_public %}
+			<span
+				title="Видна в профиле"
+				style="
+					font-size: 0.7em;
+					background: var(--accent-color);
+					color: black;
+					padding: 2px 6px;
+					border-radius: 4px;
+				"
+				>Public</span
+			>
+			{% endif %}
+		</div>
+		{% if task.deadline %}
+		<div
+			style="font-size: 0.9em; color: {{ '#ef4444' if task.deadline < now and not task.completed else 'rgba(255,255,255,0.6)' }}"
+		>
+			📅 {{ task.deadline.strftime('%d.%m.%Y') }}
+		</div>
+		{% endif %}
+	</div>
+
+	<div class="task-progress-bar">
+		<div class="task-progress-fill" style="width: {{ task.progress }}%;"></div>
+	</div>
+
+	<div class="sub-tasks">
+		{% if task.steps %} {% for step in task.steps %}
+		<div class="step-item">
+			<div
+				class="custom-checkbox {{ 'checked' if step.completed else '' }}"
+				onclick="toggleStep({{ step.id }})"
+			></div>
+			<span
+				style="text-decoration: {{ 'line-through' if step.completed else 'none' }}"
+				>{{ step.content }}</span
+			>
+		</div>
+		{% endfor %} {% else %}
+		<div class="step-item" style="margin-top: 10px">
+			<div
+				class="custom-checkbox {{ 'checked' if task.completed else '' }}"
+				onclick="toggleTask({{ task.id }})"
+			></div>
+			<span>Отметить как выполненное</span>
+		</div>
+		{% endif %}
+	</div>
+</div>
+{% else %}
+<div style="text-align: center; padding: 20px; opacity: 0.5">
+	Задач пока нет. Создайте новую выше!
+</div>
+{% endfor %}

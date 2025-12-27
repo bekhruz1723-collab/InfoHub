@@ -1,0 +1,352 @@
+{% extends "base.html" %} {% block content %}
+<div class="dashboard-grid">
+	<div class="main-col">
+		<div class="glass-card">
+			<h2 style="margin-top: 0">📝 Мои Задачи</h2>
+
+			<div
+				style="
+					margin-bottom: 30px;
+					padding-bottom: 20px;
+					border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+				"
+			>
+				<input
+					type="text"
+					id="newTaskTitle"
+					placeholder="Название задачи..."
+					style="font-weight: bold"
+				/>
+				<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
+					<input type="date" id="newTaskDate" />
+					<div
+						style="
+							display: flex;
+							align-items: center;
+							background: rgba(0, 0, 0, 0.3);
+							padding: 0 10px;
+							border-radius: 8px;
+							border: 1px solid rgba(255, 255, 255, 0.1);
+							height: 46px;
+							box-sizing: border-box;
+						"
+					>
+						<input
+							type="checkbox"
+							id="isPublic"
+							style="width: 20px; margin: 0; margin-right: 10px"
+						/>
+						<label for="isPublic" style="cursor: pointer; font-size: 0.9em"
+							>Видна всем</label
+						>
+					</div>
+				</div>
+
+				<div id="stepsContainer">
+					<div class="new-step-row">
+						<div
+							class="custom-checkbox"
+							onclick="toggleNewStepCheck(this)"
+						></div>
+						<input type="text" placeholder="Этап 1" />
+					</div>
+					<div class="new-step-row">
+						<div
+							class="custom-checkbox"
+							onclick="toggleNewStepCheck(this)"
+						></div>
+						<input type="text" placeholder="Этап 2" />
+					</div>
+					<div class="new-step-row">
+						<div
+							class="custom-checkbox"
+							onclick="toggleNewStepCheck(this)"
+						></div>
+						<input type="text" placeholder="Этап 3" />
+					</div>
+				</div>
+
+				<button
+					class="btn-primary"
+					onclick="addNewStepInput()"
+					style="
+						background: transparent;
+						border: 1px solid var(--accent-color);
+						color: var(--accent-color);
+						margin-bottom: 15px;
+						width: 100%;
+					"
+				>
+					+ Добавить еще этап
+				</button>
+
+				<button class="btn-primary" onclick="createTask()" style="width: 100%">
+					Создать задачу
+				</button>
+			</div>
+
+			<div id="taskList">{% include 'task_list.html' %}</div>
+		</div>
+	</div>
+
+	<div class="widgets-col">
+		<div class="glass-card">
+			<h3 style="margin-top: 0">📊 Продуктивность</h3>
+			{% if graphJSON and graphJSON != 'null' %}
+			<div id="chart" style="width: 100%; height: 230px"></div>
+			<script>
+				var graphs = {{ graphJSON | safe }};
+				Plotly.newPlot('chart', graphs.data, graphs.layout, {displayModeBar: false});
+			</script>
+			{% else %}
+			<div
+				style="
+					height: 150px;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					background: rgba(0, 0, 0, 0.2);
+					border-radius: 12px;
+					color: rgba(255, 255, 255, 0.4);
+				"
+			>
+				Нет статистики
+			</div>
+			{% endif %}
+		</div>
+
+		<div class="glass-card" id="weatherWidget">
+			<h3 style="margin-top: 0; margin-bottom: 15px">⛅ Прогноз погоды</h3>
+			<div id="weatherData">Загрузка...</div>
+		</div>
+
+		<div class="glass-card">
+			<h3 style="margin-top: 0">💱 Конвертер валют</h3>
+			<div style="display: flex; gap: 10px">
+				<input
+					type="number"
+					id="amount"
+					value="100"
+					oninput="convertCurrency()"
+				/>
+				<select id="currencyFrom" onchange="convertCurrency()">
+					<option value="USD">USD</option>
+					<option value="EUR">EUR</option>
+					<option value="RUB">RUB</option>
+					<option value="UZS">UZS</option>
+					<option value="KZT">KZT</option>
+					<option value="CNY">CNY</option>
+				</select>
+			</div>
+			<div style="margin-bottom: 10px">
+				в
+				<select
+					id="currencyTo"
+					style="width: auto"
+					onchange="convertCurrency()"
+				>
+					<option value="RUB">RUB</option>
+					<option value="UZS">UZS</option>
+					<option value="USD">USD</option>
+					<option value="EUR">EUR</option>
+					<option value="KZT">KZT</option>
+				</select>
+			</div>
+			<div
+				id="conversionResult"
+				style="font-size: 1.5em; font-weight: bold; color: var(--accent-color)"
+			>
+				---
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	async function refreshTasks() {
+		try {
+			const response = await fetch("/dashboard/tasks_partial");
+			if (response.ok) {
+				const data = await response.json();
+				// Обновляем список задач
+				document.getElementById("taskList").innerHTML = data.html;
+				// Обновляем график продуктивности
+				if (data.graphJSON && data.graphJSON !== "null") {
+					var graphs = JSON.parse(data.graphJSON);
+					Plotly.newPlot("chart", graphs.data, graphs.layout, {
+						displayModeBar: false,
+					});
+				}
+			}
+		} catch (e) {
+			console.error("Failed to refresh tasks", e);
+		}
+	}
+
+	function toggleNewStepCheck(el) {
+		el.classList.toggle("checked");
+	}
+
+	function addNewStepInput() {
+		const container = document.getElementById("stepsContainer");
+		const div = document.createElement("div");
+		div.className = "new-step-row";
+		div.innerHTML = `
+            <div class="custom-checkbox" onclick="toggleNewStepCheck(this)"></div>
+            <input type="text" placeholder="Новый этап">
+        `;
+		container.appendChild(div);
+	}
+
+	async function createTask() {
+		const title = document.getElementById("newTaskTitle").value;
+		const date = document.getElementById("newTaskDate").value;
+		const isPublic = document.getElementById("isPublic").checked;
+
+		const stepRows = document.querySelectorAll(".new-step-row");
+		const steps = [];
+
+		stepRows.forEach((row) => {
+			const text = row.querySelector('input[type="text"]').value;
+			if (text.trim()) {
+				steps.push({
+					text: text,
+					checked: row
+						.querySelector(".custom-checkbox")
+						.classList.contains("checked"),
+				});
+			}
+		});
+
+		if (!title) return;
+
+		const response = await fetch("/api/add_task", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				title: title,
+				deadline: date,
+				steps: steps,
+				is_public: isPublic,
+			}),
+		});
+
+		if (response.ok) {
+			// Clear inputs
+			document.getElementById("newTaskTitle").value = "";
+			document
+				.querySelectorAll(".new-step-row input")
+				.forEach((i) => (i.value = ""));
+			document
+				.querySelectorAll(".new-step-row .custom-checkbox")
+				.forEach((c) => c.classList.remove("checked"));
+			// Refresh tasks without reload
+			await refreshTasks();
+		}
+	}
+
+	async function toggleStep(id) {
+		const response = await fetch(`/api/toggle_step/${id}`, { method: "POST" });
+		if (response.ok) await refreshTasks();
+	}
+
+	async function toggleTask(id) {
+		const response = await fetch(`/api/toggle_task/${id}`, { method: "POST" });
+		if (response.ok) await refreshTasks();
+	}
+
+	// Widgets
+	async function loadWeather() {
+		const widget = document.getElementById("weatherData");
+		const city = "Moscow";
+
+		try {
+			const response = await fetch(`/api/get_weather?city=${city}`);
+			const data = await response.json();
+
+			if (data.cod == "200") {
+				const current = data.list[0];
+				const currentTemp = Math.round(current.main.temp);
+				const currentDesc = current.weather[0].description;
+				const currentIcon = current.weather[0].icon;
+
+				let forecastHTML = `
+                    <div style="display:flex; align-items:center; gap:15px; margin-bottom: 20px;">
+                        <img src="https://openweathermap.org/img/wn/${currentIcon}@2x.png" style="width:70px;">
+                        <div>
+                            <div style="font-size:2.5em; font-weight:bold; line-height: 1;">${
+															currentTemp > 0 ? "+" : ""
+														}${currentTemp}°</div>
+                            <div style="text-transform: capitalize; opacity: 0.8; font-size: 0.9em;">${currentDesc}</div>
+                        </div>
+                    </div>
+                    <div style="font-size: 0.9em; opacity: 0.8; margin-bottom: 5px;">Прогноз на дни:</div>
+                `;
+
+				const daily = {};
+				data.list.forEach((item) => {
+					const date = new Date(item.dt * 1000).toLocaleDateString("ru-RU", {
+						weekday: "short",
+						day: "numeric",
+					});
+					if (!daily[date] && Object.keys(daily).length < 4) {
+						if (new Date(item.dt * 1000).getDate() !== new Date().getDate()) {
+							daily[date] = item;
+						}
+					}
+				});
+
+				for (const [date, info] of Object.entries(daily)) {
+					forecastHTML += `
+                        <div class="forecast-item">
+                            <span>${date}</span>
+                            <div style="display:flex; align-items:center; gap:5px;">
+                                <img src="https://openweathermap.org/img/wn/${
+																	info.weather[0].icon
+																}.png" style="width:30px; height:30px;">
+                                <span>${
+																	Math.round(info.main.temp) > 0 ? "+" : ""
+																}${Math.round(info.main.temp)}°</span>
+                            </div>
+                        </div>
+                    `;
+				}
+
+				widget.innerHTML = forecastHTML;
+			} else {
+				widget.innerHTML = "Недоступно";
+			}
+		} catch (e) {
+			widget.innerHTML = "Нет связи";
+		}
+	}
+	loadWeather();
+
+	async function convertCurrency() {
+		const amount = document.getElementById("amount").value;
+		const from = document.getElementById("currencyFrom").value;
+		const to = document.getElementById("currencyTo").value;
+		const resDiv = document.getElementById("conversionResult");
+
+		if (!amount) return;
+
+		resDiv.style.opacity = "0.5";
+		try {
+			const response = await fetch(`/api/get_currency?from=${from}&to=${to}`);
+			const data = await response.json();
+
+			if (data && data.data && data.data.mid) {
+				resDiv.innerText = `${(amount * data.data.mid).toFixed(2)} ${to}`;
+			} else if (data && data.rate) {
+				resDiv.innerText = `${(amount * data.rate).toFixed(2)} ${to}`;
+			} else {
+				resDiv.innerText = "Ошибка";
+			}
+		} catch (e) {
+			resDiv.innerText = "Ошибка";
+		}
+		resDiv.style.opacity = "1";
+	}
+	convertCurrency();
+</script>
+{% endblock %}
