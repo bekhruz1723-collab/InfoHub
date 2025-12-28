@@ -57,13 +57,6 @@
 						></div>
 						<input type="text" placeholder="Этап 2" />
 					</div>
-					<div class="new-step-row">
-						<div
-							class="custom-checkbox"
-							onclick="toggleNewStepCheck(this)"
-						></div>
-						<input type="text" placeholder="Этап 3" />
-					</div>
 				</div>
 
 				<button
@@ -145,7 +138,7 @@
 					style="width: auto"
 					onchange="convertCurrency()"
 				>
-					<option value="RUB">RUB</option>
+					<option value="RUB" selected>RUB</option>
 					<option value="UZS">UZS</option>
 					<option value="USD">USD</option>
 					<option value="EUR">EUR</option>
@@ -168,9 +161,7 @@
 			const response = await fetch("/dashboard/tasks_partial");
 			if (response.ok) {
 				const data = await response.json();
-				// Обновляем список задач
 				document.getElementById("taskList").innerHTML = data.html;
-				// Обновляем график продуктивности
 				if (data.graphJSON && data.graphJSON !== "null") {
 					var graphs = JSON.parse(data.graphJSON);
 					Plotly.newPlot("chart", graphs.data, graphs.layout, {
@@ -232,7 +223,6 @@
 		});
 
 		if (response.ok) {
-			// Clear inputs
 			document.getElementById("newTaskTitle").value = "";
 			document
 				.querySelectorAll(".new-step-row input")
@@ -240,7 +230,6 @@
 			document
 				.querySelectorAll(".new-step-row .custom-checkbox")
 				.forEach((c) => c.classList.remove("checked"));
-			// Refresh tasks without reload
 			await refreshTasks();
 		}
 	}
@@ -255,15 +244,13 @@
 		if (response.ok) await refreshTasks();
 	}
 
-	// Widgets
+	// Weather
 	async function loadWeather() {
 		const widget = document.getElementById("weatherData");
 		const city = "Moscow";
-
 		try {
 			const response = await fetch(`/api/get_weather?city=${city}`);
 			const data = await response.json();
-
 			if (data.cod == "200") {
 				const current = data.list[0];
 				const currentTemp = Math.round(current.main.temp);
@@ -311,7 +298,6 @@
                         </div>
                     `;
 				}
-
 				widget.innerHTML = forecastHTML;
 			} else {
 				widget.innerHTML = "Недоступно";
@@ -322,6 +308,7 @@
 	}
 	loadWeather();
 
+	// Currency
 	async function convertCurrency() {
 		const amount = document.getElementById("amount").value;
 		const from = document.getElementById("currencyFrom").value;
@@ -335,9 +322,7 @@
 			const response = await fetch(`/api/get_currency?from=${from}&to=${to}`);
 			const data = await response.json();
 
-			if (data && data.data && data.data.mid) {
-				resDiv.innerText = `${(amount * data.data.mid).toFixed(2)} ${to}`;
-			} else if (data && data.rate) {
+			if (data && data.rate) {
 				resDiv.innerText = `${(amount * data.rate).toFixed(2)} ${to}`;
 			} else {
 				resDiv.innerText = "Ошибка";

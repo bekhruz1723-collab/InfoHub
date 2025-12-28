@@ -4,7 +4,7 @@
 		<div style="text-align: center; margin-bottom: 20px">
 			<div class="file-upload-wrapper">
 				<img
-					src="{{ url_for('static', filename='uploads/' + user.avatar) }}"
+					src="{% if user.avatar and user.avatar.startswith('http') %}{{ user.avatar }}{% else %}{{ url_for('static', filename='uploads/' + (user.avatar or 'default.svg')) }}{% endif %}"
 					id="avatarPreview"
 					style="
 						width: 120px;
@@ -22,6 +22,7 @@
 					name="avatar"
 					id="avatarInput"
 					style="display: none"
+					accept="image/*"
 					onchange="document.getElementById('avatarPreview').src = window.URL.createObjectURL(this.files[0])"
 				/>
 			</div>
