@@ -12,7 +12,6 @@ import plotly.graph_objs as go
 from datetime import datetime, timezone
 
 app = Flask(__name__)
-
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', '17236458Bb')
 
 database_url = os.environ.get('DATABASE_URL')
@@ -20,7 +19,6 @@ if database_url and database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url or 'sqlite:///site.db'
-# Папка upload больше не нужна для новых файлов, но оставим для статики
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 db.init_app(app)
@@ -28,7 +26,6 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
-# API КЛЮЧИ
 OPENWEATHER_KEY = "1a080bf136d2a532b90934361f5318e0"
 IMGBB_API_KEY = "2c1ddc5d3460afdea892c6c069777616"
 CURRENCY_API_KEY = "cur_live_ueS8diO0KLfVhGcwS2UWckkjoE0oXMlgpsLKkl29"
@@ -36,25 +33,20 @@ CURRENCY_API_KEY = "cur_live_ueS8diO0KLfVhGcwS2UWckkjoE0oXMlgpsLKkl29"
 with app.app_context():
     db.create_all()
 
-
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, int(user_id))
 
-
 def validate_nickname(nickname):
     return bool(re.match(r'^[a-zA-Z0-9_]+$', nickname))
 
-
-# Функция загрузки на ImgBB
 def upload_to_imgbb(file_obj):
     try:
         url = "https://api.imgbb.com/1/upload"
         payload = {
             "key": IMGBB_API_KEY,
-            "expiration": 0  # хранить вечно
+            "expiration": 0
         }
-        # Отправляем файл
         files = {
             "image": file_obj.read()
         }
@@ -66,7 +58,6 @@ def upload_to_imgbb(file_obj):
     except Exception as e:
         print(f"Error uploading to ImgBB: {e}")
         return None
-
 
 def calculate_productivity(user_id):
     tasks = Task.query.filter_by(user_id=user_id).all()
@@ -130,7 +121,6 @@ def calculate_productivity(user_id):
 
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
-
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -151,14 +141,12 @@ def register():
             return redirect(url_for('register'))
 
         hashed_pw = generate_password_hash(password)
-        # Default avatar name - теперь просто имя файла, но логика будет проверять URL
         new_user = User(nickname=nickname, username=username, password_hash=hashed_pw, avatar='default.svg')
         db.session.add(new_user)
         db.session.commit()
         login_user(new_user)
         return redirect(url_for('dashboard'))
     return render_template('auth.html', mode='register')
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -175,13 +163,11 @@ def login():
             flash('Неверный ник или пароль', 'danger')
     return render_template('auth.html', mode='login')
 
-
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))
-
 
 @app.route('/delete_account', methods=['POST'])
 @login_required
@@ -193,7 +179,6 @@ def delete_account():
         db.session.commit()
         flash('Аккаунт удален.', 'success')
     return redirect(url_for('register'))
-
 
 def get_tasks_list_data(user_id):
     tasks = Task.query.filter_by(user_id=user_id).order_by(Task.created_at.desc()).all()
@@ -207,7 +192,6 @@ def get_tasks_list_data(user_id):
             task.progress = 100 if task.completed else 0
     return tasks, now
 
-
 @app.route('/')
 @app.route('/dashboard')
 @login_required
@@ -215,7 +199,6 @@ def dashboard():
     tasks, now = get_tasks_list_data(current_user.id)
     graphJSON = calculate_productivity(current_user.id)
     return render_template('dashboard.html', tasks=tasks, graphJSON=graphJSON, now=now)
-
 
 @app.route('/dashboard/tasks_partial')
 @login_required
@@ -227,7 +210,6 @@ def dashboard_tasks_partial():
         'graphJSON': graphJSON
     })
 
-
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
@@ -238,8 +220,7 @@ def profile():
         if age: current_user.age = int(age)
         current_user.gender = request.form.get('gender')
         current_user.goals = request.form.get('goals')
-
-        # Загрузка аватара на ImgBB
+        
         if 'avatar' in request.files:
             file = request.files['avatar']
             if file.filename != '':
@@ -254,12 +235,10 @@ def profile():
         return redirect(url_for('profile'))
     return render_template('profile.html', user=current_user)
 
-
 @app.route('/search')
 @login_required
 def search():
     return render_template('search.html')
-
 
 @app.route('/api/search')
 @login_required
@@ -270,20 +249,18 @@ def api_search():
     users = User.query.filter(User.nickname.contains(query) | User.username.contains(query)).limit(10).all()
     results = []
     for u in users:
-        # Логика для аватара в JSON
         if u.avatar and u.avatar.startswith('http'):
             avatar_url = u.avatar
         else:
             avatar_url = url_for('static', filename='uploads/' + (u.avatar or 'default.svg'))
-
+            
         results.append({
             'username': u.username,
             'nickname': u.nickname,
-            'avatar': avatar_url,  # Отправляем готовый URL
+            'avatar': avatar_url, 
             'bio': u.bio[:100] + '...' if u.bio else 'Нет описания'
         })
     return jsonify(results)
-
 
 @app.route('/u/<nickname>')
 @login_required
@@ -305,7 +282,6 @@ def public_profile(nickname):
 
     graphJSON = calculate_productivity(user.id)
     return render_template('public_profile.html', user=user, tasks=tasks, graphJSON=graphJSON, now=now)
-
 
 @app.route('/api/add_task', methods=['POST'])
 @login_required
@@ -340,7 +316,6 @@ def add_task():
     db.session.commit()
     return jsonify({'status': 'success'})
 
-
 @app.route('/api/toggle_step/<int:step_id>', methods=['POST'])
 @login_required
 def toggle_step(step_id):
@@ -358,7 +333,6 @@ def toggle_step(step_id):
     db.session.commit()
     return jsonify({'status': 'success'})
 
-
 @app.route('/api/toggle_task/<int:task_id>', methods=['POST'])
 @login_required
 def toggle_task(task_id):
@@ -375,6 +349,16 @@ def toggle_task(task_id):
     db.session.commit()
     return jsonify({'status': 'success'})
 
+@app.route('/api/toggle_task_public/<int:task_id>', methods=['POST'])
+@login_required
+def toggle_task_public(task_id):
+    task = Task.query.get_or_404(task_id)
+    if task.user_id != current_user.id:
+        return jsonify({'error': 'Forbidden'}), 403
+    
+    task.is_public = not task.is_public
+    db.session.commit()
+    return jsonify({'status': 'success'})
 
 @app.route('/api/get_weather')
 @login_required
@@ -387,33 +371,25 @@ def get_weather():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-
 @app.route('/api/get_currency')
 @login_required
 def get_currency():
     base = request.args.get('from', 'USD').upper()
     target = request.args.get('to', 'RUB').upper()
     url = f"https://api.currencyapi.com/v3/latest?apikey={CURRENCY_API_KEY}&currencies={base},{target}"
-
     try:
         response = requests.get(url, timeout=10)
         data = response.json()
-
         if 'data' in data:
             rates = data['data']
-
             rate_base = rates.get(base, {}).get('value')
             rate_target = rates.get(target, {}).get('value')
-
             if rate_base and rate_target:
                 cross_rate = (1 / rate_base) * rate_target
                 return jsonify({'rate': cross_rate})
-
         return jsonify({'error': 'Currency not found'}), 400
     except Exception as e:
-        print(e)
         return jsonify({'error': str(e)}), 500
-
 
 if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_FOLDER']):

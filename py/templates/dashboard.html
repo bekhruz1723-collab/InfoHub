@@ -17,7 +17,7 @@
 					placeholder="Название задачи..."
 					style="font-weight: bold"
 				/>
-				<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
+				<div class="task-inputs-row">
 					<input type="date" id="newTaskDate" />
 					<div
 						style="
@@ -93,6 +93,7 @@
 			</script>
 			{% else %}
 			<div
+				id="no-chart-placeholder"
 				style="
 					height: 150px;
 					display: flex;
@@ -105,11 +106,53 @@
 			>
 				Нет статистики
 			</div>
+			<div id="chart" style="width: 100%; height: 230px; display: none"></div>
 			{% endif %}
 		</div>
 
 		<div class="glass-card" id="weatherWidget">
-			<h3 style="margin-top: 0; margin-bottom: 15px">⛅ Прогноз погоды</h3>
+			<div
+				style="
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+					margin-bottom: 15px;
+					gap: 10px;
+				"
+			>
+				<h3 style="margin: 0; white-space: nowrap">⛅ Погода</h3>
+				<div style="display: flex; gap: 5px; width: 100%; max-width: 180px">
+					<input
+						type="text"
+						id="weatherCityInput"
+						placeholder="Город..."
+						style="margin: 0; padding: 5px 8px; font-size: 0.85em; height: 30px"
+					/>
+					<button
+						class="btn-primary"
+						onclick="searchWeather()"
+						style="
+							padding: 0 10px;
+							height: 30px;
+							display: flex;
+							align-items: center;
+						"
+					>
+						🔎
+					</button>
+				</div>
+			</div>
+			<h4
+				id="currentCityName"
+				style="
+					margin: -10px 0 15px;
+					opacity: 0.7;
+					font-weight: normal;
+					font-size: 0.9em;
+				"
+			>
+				Загрузка...
+			</h4>
 			<div id="weatherData">Загрузка...</div>
 		</div>
 
@@ -162,9 +205,17 @@
 			if (response.ok) {
 				const data = await response.json();
 				document.getElementById("taskList").innerHTML = data.html;
+
+				// Обновление графика
 				if (data.graphJSON && data.graphJSON !== "null") {
 					var graphs = JSON.parse(data.graphJSON);
-					Plotly.newPlot("chart", graphs.data, graphs.layout, {
+					const chartDiv = document.getElementById("chart");
+					const placeholder = document.getElementById("no-chart-placeholder");
+
+					if (placeholder) placeholder.style.display = "none";
+					chartDiv.style.display = "block";
+
+					Plotly.react("chart", graphs.data, graphs.layout, {
 						displayModeBar: false,
 					});
 				}
@@ -244,14 +295,25 @@
 		if (response.ok) await refreshTasks();
 	}
 
+	async function toggleTaskPublic(id) {
+		const response = await fetch(`/api/toggle_task_public/${id}`, {
+			method: "POST",
+		});
+		if (response.ok) await refreshTasks();
+	}
+
 	// Weather
-	async function loadWeather() {
+	async function loadWeather(city) {
 		const widget = document.getElementById("weatherData");
-		const city = "Moscow";
+		const cityNameEl = document.getElementById("currentCityName");
+		widget.style.opacity = "0.5";
+
 		try {
 			const response = await fetch(`/api/get_weather?city=${city}`);
 			const data = await response.json();
+
 			if (data.cod == "200") {
+				cityNameEl.innerText = `в г. ${data.city.name}`;
 				const current = data.list[0];
 				const currentTemp = Math.round(current.main.temp);
 				const currentDesc = current.weather[0].description;
@@ -300,13 +362,28 @@
 				}
 				widget.innerHTML = forecastHTML;
 			} else {
-				widget.innerHTML = "Недоступно";
+				widget.innerHTML = "Город не найден";
+				cityNameEl.innerText = "Ошибка";
 			}
 		} catch (e) {
 			widget.innerHTML = "Нет связи";
 		}
+		widget.style.opacity = "1";
 	}
-	loadWeather();
+
+	function searchWeather() {
+		const input = document.getElementById("weatherCityInput");
+		const city = input.value.trim();
+		if (city) {
+			localStorage.setItem("weather_city", city);
+			loadWeather(city);
+			input.value = "";
+		}
+	}
+
+	// Инициализация погоды
+	const savedCity = localStorage.getItem("weather_city") || "Moscow";
+	loadWeather(savedCity);
 
 	// Currency
 	async function convertCurrency() {

@@ -8,21 +8,26 @@
 				display: flex;
 				align-items: center;
 				gap: 10px;
+				flex-wrap: wrap;
 			"
 		>
-			{{ task.title }} {% if task.is_public %}
-			<span
-				title="Видна в профиле"
+			{{ task.title }}
+			<button
+				onclick="toggleTaskPublic({{ task.id }})"
+				title="Нажмите чтобы изменить видимость"
 				style="
 					font-size: 0.7em;
-					background: var(--accent-color);
-					color: black;
-					padding: 2px 6px;
-					border-radius: 4px;
+					background: {{ 'var(--accent-color)' if task.is_public else 'transparent' }};
+					color: {{ 'black' if task.is_public else 'var(--text-color)' }};
+					border: 1px solid var(--accent-color);
+					padding: 2px 8px;
+					border-radius: 12px;
+					cursor: pointer;
+					transition: all 0.2s;
 				"
-				>Public</span
 			>
-			{% endif %}
+				{{ 'Public' if task.is_public else 'Private' }}
+			</button>
 		</div>
 		{% if task.deadline %}
 		<div
@@ -45,7 +50,7 @@
 				onclick="toggleStep({{ step.id }})"
 			></div>
 			<span
-				style="text-decoration: {{ 'line-through' if step.completed else 'none' }}"
+				style="text-decoration: {{ 'line-through' if step.completed else 'none' }}; opacity: {{ '0.6' if step.completed else '1' }};"
 				>{{ step.content }}</span
 			>
 		</div>
@@ -55,7 +60,10 @@
 				class="custom-checkbox {{ 'checked' if task.completed else '' }}"
 				onclick="toggleTask({{ task.id }})"
 			></div>
-			<span>Отметить как выполненное</span>
+			<span
+				style="text-decoration: {{ 'line-through' if task.completed else 'none' }}; opacity: {{ '0.6' if task.completed else '1' }};"
+				>Отметить как выполненное</span
+			>
 		</div>
 		{% endif %}
 	</div>
