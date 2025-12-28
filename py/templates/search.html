@@ -56,13 +56,12 @@
 					div.style =
 						"display: flex; gap: 20px; align-items: flex-start; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); padding: 20px;";
 
-					// user.avatar уже содержит полный корректный путь из API
 					div.innerHTML = `
                         <img src="${user.avatar}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-color);">
                         <div style="flex-grow: 1;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; flex-wrap: wrap; gap: 10px;">
                                 <div style="font-weight: bold; font-size: 1.3em">${user.username}</div>
-                                <a href="/u/${user.nickname}" class="btn-primary" style="text-decoration: none; font-size: 0.9em; padding: 8px 16px;">Перейти в профиль</a>
+                                <a href="/u/${user.nickname}" class="btn-visit-profile">Перейти в профиль →</a>
                             </div>
                             <div style="opacity: 0.7; font-size: 1em; color: var(--accent-color); margin-bottom: 10px;">@${user.nickname}</div>
                             <div style="opacity: 0.8; font-size: 0.95em; font-style: italic;">"${user.bio}"</div>

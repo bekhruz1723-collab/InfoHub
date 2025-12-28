@@ -22,6 +22,12 @@
 		<div class="container">
 			<nav class="glass-card">
 				<a href="{{ url_for('dashboard') }}" class="logo-container">
+					<img
+						src="{{ url_for('static', filename='uploads/logo.png') }}"
+						alt="Logo"
+						style="height: 40px; width: auto"
+						onerror="this.style.display='none'"
+					/>
 					<div class="site-title">InfoHub</div>
 				</a>
 				<div class="nav-links">

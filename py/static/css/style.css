@@ -272,6 +272,7 @@ button.btn-danger:hover {
 	width: 20px;
 	height: 20px;
 	min-width: 20px;
+	flex-shrink: 0;
 	border: 2px solid var(--accent-color);
 	border-radius: 4px;
 	cursor: pointer;
@@ -382,6 +383,39 @@ button.btn-danger:hover {
 	background: var(--border-color);
 }
 
+.task-inputs-row {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+}
+
+.btn-visit-profile {
+	display: inline-block;
+	background: var(--nav-hover-bg);
+	border: 1px solid var(--accent-color);
+	color: var(--accent-color);
+	text-decoration: none;
+	padding: 8px 16px;
+	border-radius: 8px;
+	font-weight: 600;
+	transition: all 0.2s ease;
+	font-size: 0.9em;
+}
+
+.btn-visit-profile:hover {
+	background: var(--accent-color);
+	color: white;
+	transform: translateY(-2px);
+}
+
+[data-theme="light"] .btn-visit-profile {
+	color: var(--accent-color);
+	border-color: var(--accent-color);
+}
+[data-theme="light"] .btn-visit-profile:hover {
+	color: white;
+}
+
 @media (max-width: 768px) {
 	.dashboard-grid {
 		grid-template-columns: 1fr;
@@ -397,5 +431,8 @@ button.btn-danger:hover {
 	}
 	.logo-container {
 		margin-bottom: 10px;
+	}
+	.task-inputs-row {
+		grid-template-columns: 1fr;
 	}
 }
