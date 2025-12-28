@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>InfoHuby</title>
+		<title>InfoHub</title>
 		<link
 			rel="stylesheet"
 			href="{{ url_for('static', filename='css/style.css') }}"
@@ -22,13 +22,7 @@
 		<div class="container">
 			<nav class="glass-card">
 				<a href="{{ url_for('dashboard') }}" class="logo-container">
-					<img
-						src="{{ url_for('static', filename='uploads/logo.png') }}"
-						alt="Logo"
-						style="height: 40px; width: auto"
-						onerror="this.style.display='none'"
-					/>
-					<div class="site-title">InfoHuby</div>
+					<div class="site-title">InfoHub</div>
 				</a>
 				<div class="nav-links">
 					{% if current_user.is_authenticated %}
@@ -118,7 +112,6 @@
 		</div>
 
 		<script>
-			// Логика темы
 			function toggleTheme() {
 				const body = document.body;
 				const isLight = body.getAttribute("data-theme") === "light";
@@ -131,12 +124,9 @@
 					localStorage.setItem("theme", "light");
 					updateIcon(true);
 				}
-				// Перерисовка графиков Plotly при смене темы (чтобы обновились шрифты/цвета если настроено)
 				if (typeof Plotly !== "undefined") {
 					const chart = document.getElementById("chart");
 					if (chart) {
-						const layout = chart.layout;
-						// Просто релаин, Plotly подхватит прозрачный фон, но цвет текста может потребоваться обновить явно
 						Plotly.relayout(chart, {});
 					}
 				}
@@ -156,12 +146,10 @@
 				}
 			}
 
-			// Инициализация при загрузке
 			(function () {
 				const savedTheme = localStorage.getItem("theme");
 				if (savedTheme === "light") {
 					document.body.setAttribute("data-theme", "light");
-					// Ждем загрузки DOM для иконок
 					document.addEventListener("DOMContentLoaded", () => updateIcon(true));
 				} else {
 					document.addEventListener("DOMContentLoaded", () =>

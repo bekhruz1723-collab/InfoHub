@@ -3,7 +3,7 @@
 	<div class="main-col">
 		<div class="glass-card" style="margin-bottom: 20px; text-align: center">
 			<img
-				src="{{ url_for('static', filename='uploads/' + user.avatar) }}"
+				src="{% if user.avatar and user.avatar.startswith('http') %}{{ user.avatar }}{% else %}{{ url_for('static', filename='uploads/' + (user.avatar or 'default.svg')) }}{% endif %}"
 				style="
 					width: 120px;
 					height: 120px;
