@@ -12,7 +12,7 @@
 		style="width: 100%; max-width: 400px; text-align: center"
 	>
 		<h2 style="margin-bottom: 20px">
-			{{ 'Регистрация' if mode == 'register' else 'Вход' }}
+			{{ _('auth_register_title') if mode == 'register' else _('auth_login_title') }}
 		</h2>
 
 		<form method="POST" action="">
@@ -20,7 +20,7 @@
 			<input
 				type="text"
 				name="username"
-				placeholder="Как вас зовут?"
+				placeholder="{{ _('auth_username_placeholder') }}"
 				required
 			/>
 			{% endif %}
@@ -28,13 +28,13 @@
 			<input
 				type="text"
 				name="nickname"
-				placeholder="Никнейм (только латиница)"
+				placeholder="{{ _('auth_nickname_placeholder') }}"
 				required
 			/>
 			<input
 				type="password"
 				name="password"
-				placeholder="Пароль (мин. 8 символов)"
+				placeholder="{{ _('auth_password_placeholder') }}"
 				required
 			/>
 
@@ -43,18 +43,20 @@
 				class="btn-primary"
 				style="width: 100%; margin-top: 10px"
 			>
-				{{ 'Создать аккаунт' if mode == 'register' else 'Войти' }}
+				{{ _('auth_create_account') if mode == 'register' else _('auth_login_button') }}
 			</button>
 		</form>
 
 		<div style="margin-top: 20px; font-size: 0.9em">
-			{% if mode == 'register' %} Уже есть аккаунт?
+			{% if mode == 'register' %}
+			{{ _('auth_have_account') }}
 			<a href="{{ url_for('login') }}" style="color: var(--accent-color)"
-				>Войти</a
+				>{{ _('auth_login_link') }}</a
 			>
-			{% else %} Нет аккаунта?
+			{% else %}
+			{{ _('auth_no_account') }}
 			<a href="{{ url_for('register') }}" style="color: var(--accent-color)"
-				>Зарегистрироваться</a
+				>{{ _('auth_register_link') }}</a
 			>
 			{% endif %}
 		</div>

@@ -14,7 +14,7 @@
 			{{ task.title }}
 			<button
 				onclick="toggleTaskPublic({{ task.id }})"
-				title="Нажмите чтобы изменить видимость"
+				title="{{ _('dashboard_public_label') if not task.is_public else _('dashboard_private') }}"
 				style="
 					font-size: 0.7em;
 					background: {{ 'var(--accent-color)' if task.is_public else 'transparent' }};
@@ -26,7 +26,7 @@
 					transition: all 0.2s;
 				"
 			>
-				{{ 'Public' if task.is_public else 'Private' }}
+				{{ _('dashboard_public') if task.is_public else _('dashboard_private') }}
 			</button>
 		</div>
 		{% if task.deadline %}
@@ -62,7 +62,7 @@
 			></div>
 			<span
 				style="text-decoration: {{ 'line-through' if task.completed else 'none' }}; opacity: {{ '0.6' if task.completed else '1' }};"
-				>Отметить как выполненное</span
+				>{{ _('dashboard_mark_completed') }}</span
 			>
 		</div>
 		{% endif %}
@@ -70,6 +70,6 @@
 </div>
 {% else %}
 <div style="text-align: center; padding: 20px; opacity: 0.5">
-	Задач пока нет. Создайте новую выше!
+	{{ _('dashboard_no_tasks') }}
 </div>
 {% endfor %}

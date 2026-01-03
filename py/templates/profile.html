@@ -16,7 +16,7 @@
 					"
 				/>
 				<br />
-				<label for="avatarInput" class="file-upload-label">📸 Изменить</label>
+				<label for="avatarInput" class="file-upload-label">{{ _('profile_change_avatar') }}</label>
 				<input
 					type="file"
 					name="avatar"
@@ -31,45 +31,45 @@
 			<p style="opacity: 0.7">@{{ user.nickname }}</p>
 		</div>
 
-		<label>Имя пользователя</label>
+		<label>{{ _('profile_username_label') }}</label>
 		<input type="text" name="username" value="{{ user.username }}" />
 
-		<label>О себе</label>
+		<label>{{ _('profile_bio_label') }}</label>
 		<textarea name="bio" rows="3">{{ user.bio or '' }}</textarea>
 
 		<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
 			<div>
-				<label>Возраст</label>
+				<label>{{ _('profile_age_label') }}</label>
 				<input
 					type="number"
 					name="age"
 					value="{{ user.age or '' }}"
-					placeholder="Не указано"
+					placeholder="{{ _('profile_age_placeholder') }}"
 				/>
 			</div>
 			<div>
-				<label>Пол</label>
+				<label>{{ _('profile_gender_label') }}</label>
 				<select name="gender">
 					<option value="" {% if not user.gender %}selected{% endif %}>
-						Не указано
+						{{ _('profile_gender_not_specified') }}
 					</option>
 					<option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>
-						Мужской
+						{{ _('profile_gender_male') }}
 					</option>
 					<option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>
-						Женский
+						{{ _('profile_gender_female') }}
 					</option>
 				</select>
 			</div>
 		</div>
 
-		<label>Цели</label>
-		<textarea name="goals" placeholder="Мои глобальные цели...">
+		<label>{{ _('profile_goals_label') }}</label>
+		<textarea name="goals" placeholder="{{ _('profile_goals_placeholder') }}">
 {{ user.goals or '' }}</textarea
 		>
 
 		<button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px">
-			Сохранить изменения
+			{{ _('profile_save_changes') }}
 		</button>
 	</form>
 
@@ -91,7 +91,7 @@
 				text-decoration: none;
 				display: block;
 			"
-			>Выйти из аккаунта</a
+			>{{ _('profile_logout') }}</a
 		>
 
 		<button
@@ -99,16 +99,16 @@
 			class="btn-danger"
 			style="width: 100%"
 		>
-			Удалить профиль
+			{{ _('profile_delete') }}
 		</button>
 	</div>
 </div>
 
 <div id="deleteModal" class="modal-overlay">
 	<div class="modal-content animate-modal">
-		<h2 style="color: var(--danger-color)">Удаление аккаунта</h2>
+		<h2 style="color: var(--danger-color)">{{ _('profile_delete_modal_title') }}</h2>
 		<p>
-			Вы уверены? Это действие <b>необратимо</b> удалит ваш профиль и все задачи.
+			{{ _('profile_delete_modal_text') | safe }}
 		</p>
 		<div class="modal-actions">
 			<button
@@ -116,10 +116,10 @@
 				style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white"
 				onclick="closeDeleteModal()"
 			>
-				Отмена
+				{{ _('profile_delete_modal_cancel') }}
 			</button>
 			<form action="{{ url_for('delete_account') }}" method="POST">
-				<button type="submit" class="btn-danger">Да, удалить</button>
+				<button type="submit" class="btn-danger">{{ _('profile_delete_modal_confirm') }}</button>
 			</form>
 		</div>
 	</div>

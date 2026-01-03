@@ -1,0 +1,202 @@
+translations = {
+    'ru': {
+        # Navigation
+        'site_title': 'InfoHub',
+        'nav_home': 'Главная',
+        'nav_search': 'Поиск',
+        'nav_profile': 'Профиль',
+        'nav_login': 'Вход',
+        'nav_register': 'Регистрация',
+        'theme_toggle': 'Переключить тему',
+        
+        # Auth
+        'auth_register_title': 'Регистрация',
+        'auth_login_title': 'Вход',
+        'auth_username_placeholder': 'Как вас зовут?',
+        'auth_nickname_placeholder': 'Никнейм (только латиница)',
+        'auth_password_placeholder': 'Пароль (мин. 8 символов)',
+        'auth_create_account': 'Создать аккаунт',
+        'auth_login_button': 'Войти',
+        'auth_have_account': 'Уже есть аккаунт?',
+        'auth_no_account': 'Нет аккаунта?',
+        'auth_login_link': 'Войти',
+        'auth_register_link': 'Зарегистрироваться',
+        
+        # Flash messages
+        'flash_nickname_invalid': 'Никнейм должен содержать только латиницу и цифры!',
+        'flash_password_short': 'Пароль должен быть минимум 8 символов!',
+        'flash_nickname_taken': 'Этот никнейм уже занят.',
+        'flash_invalid_credentials': 'Неверный ник или пароль',
+        'flash_account_deleted': 'Аккаунт удален.',
+        'flash_profile_updated': 'Профиль обновлен!',
+        'flash_image_error': 'Ошибка при загрузке изображения',
+        
+        # Profile
+        'profile_change_avatar': '📸 Изменить',
+        'profile_username_label': 'Имя пользователя',
+        'profile_bio_label': 'О себе',
+        'profile_age_label': 'Возраст',
+        'profile_age_placeholder': 'Не указано',
+        'profile_gender_label': 'Пол',
+        'profile_gender_not_specified': 'Не указано',
+        'profile_gender_male': 'Мужской',
+        'profile_gender_female': 'Женский',
+        'profile_goals_label': 'Цели',
+        'profile_goals_placeholder': 'Мои глобальные цели...',
+        'profile_save_changes': 'Сохранить изменения',
+        'profile_logout': 'Выйти из аккаунта',
+        'profile_delete': 'Удалить профиль',
+        'profile_delete_modal_title': 'Удаление аккаунта',
+        'profile_delete_modal_text': 'Вы уверены? Это действие <b>необратимо</b> удалит ваш профиль и все задачи.',
+        'profile_delete_modal_cancel': 'Отмена',
+        'profile_delete_modal_confirm': 'Да, удалить',
+        
+        # Dashboard
+        'dashboard_my_tasks': '📝 Мои Задачи',
+        'dashboard_task_title_placeholder': 'Название задачи...',
+        'dashboard_public_label': 'Видна всем',
+        'dashboard_step_placeholder': 'Этап',
+        'dashboard_add_step': '+ Добавить еще этап',
+        'dashboard_create_task': 'Создать задачу',
+        'dashboard_no_tasks': 'Задач пока нет. Создайте новую выше!',
+        'dashboard_completed': 'Завершено',
+        'dashboard_mark_completed': 'Отметить как выполненное',
+        'dashboard_productivity': '📊 Продуктивность',
+        'dashboard_no_stats': 'Нет статистики',
+        'dashboard_weather': '☁️ Погода',
+        'dashboard_weather_city_placeholder': 'Город...',
+        'dashboard_weather_loading': 'Загрузка...',
+        'dashboard_weather_in_city': 'в г.',
+        'dashboard_weather_forecast': 'Прогноз на дни:',
+        'dashboard_weather_not_found': 'Город не найден',
+        'dashboard_weather_no_connection': 'Нет связи',
+        'dashboard_currency': '💱 Конвертер валют',
+        'dashboard_currency_in': 'в',
+        'dashboard_public': 'Public',
+        'dashboard_private': 'Private',
+        
+        # Search
+        'search_title': '🔍 Поиск пользователей',
+        'search_placeholder': 'Начните вводить ник или имя...',
+        'search_results': 'Результаты поиска:',
+        'search_visit_profile': 'Перейти в профиль →',
+        'search_no_results': 'Никого не найдено :(',
+        'search_no_bio': 'Нет описания',
+        
+        # Public Profile
+        'public_profile_age': 'Возраст',
+        'public_profile_gender': 'Пол',
+        'public_profile_public_tasks': '📂 Публичные задачи',
+        'public_profile_productivity': '📊 Продуктивность',
+        'public_profile_no_data': 'Нет данных',
+        'public_profile_goals': '🎯 Цели',
+        'public_profile_goals_hidden': 'Пользователь скрыл свои цели.',
+        
+        # Chart labels
+        'chart_completed': 'Выполнено',
+        'chart_in_progress': 'В процессе',
+        'chart_overdue': 'Просрочено',
+    },
+    'en': {
+        # Navigation
+        'site_title': 'InfoHub',
+        'nav_home': 'Home',
+        'nav_search': 'Search',
+        'nav_profile': 'Profile',
+        'nav_login': 'Login',
+        'nav_register': 'Register',
+        'theme_toggle': 'Toggle theme',
+        
+        # Auth
+        'auth_register_title': 'Registration',
+        'auth_login_title': 'Login',
+        'auth_username_placeholder': 'What is your name?',
+        'auth_nickname_placeholder': 'Nickname (Latin only)',
+        'auth_password_placeholder': 'Password (min. 8 characters)',
+        'auth_create_account': 'Create Account',
+        'auth_login_button': 'Login',
+        'auth_have_account': 'Already have an account?',
+        'auth_no_account': "Don't have an account?",
+        'auth_login_link': 'Login',
+        'auth_register_link': 'Register',
+        
+        # Flash messages
+        'flash_nickname_invalid': 'Nickname must contain only Latin letters and numbers!',
+        'flash_password_short': 'Password must be at least 8 characters!',
+        'flash_nickname_taken': 'This nickname is already taken.',
+        'flash_invalid_credentials': 'Invalid nickname or password',
+        'flash_account_deleted': 'Account deleted.',
+        'flash_profile_updated': 'Profile updated!',
+        'flash_image_error': 'Error uploading image',
+        
+        # Profile
+        'profile_change_avatar': '📸 Change',
+        'profile_username_label': 'Username',
+        'profile_bio_label': 'About',
+        'profile_age_label': 'Age',
+        'profile_age_placeholder': 'Not specified',
+        'profile_gender_label': 'Gender',
+        'profile_gender_not_specified': 'Not specified',
+        'profile_gender_male': 'Male',
+        'profile_gender_female': 'Female',
+        'profile_goals_label': 'Goals',
+        'profile_goals_placeholder': 'My global goals...',
+        'profile_save_changes': 'Save Changes',
+        'profile_logout': 'Logout',
+        'profile_delete': 'Delete Profile',
+        'profile_delete_modal_title': 'Delete Account',
+        'profile_delete_modal_text': 'Are you sure? This action is <b>irreversible</b> and will delete your profile and all tasks.',
+        'profile_delete_modal_cancel': 'Cancel',
+        'profile_delete_modal_confirm': 'Yes, delete',
+        
+        # Dashboard
+        'dashboard_my_tasks': '📝 My Tasks',
+        'dashboard_task_title_placeholder': 'Task title...',
+        'dashboard_public_label': 'Visible to all',
+        'dashboard_step_placeholder': 'Step',
+        'dashboard_add_step': '+ Add another step',
+        'dashboard_create_task': 'Create Task',
+        'dashboard_no_tasks': 'No tasks yet. Create a new one above!',
+        'dashboard_completed': 'Completed',
+        'dashboard_mark_completed': 'Mark as completed',
+        'dashboard_productivity': '📊 Productivity',
+        'dashboard_no_stats': 'No statistics',
+        'dashboard_weather': '☁️ Weather',
+        'dashboard_weather_city_placeholder': 'City...',
+        'dashboard_weather_loading': 'Loading...',
+        'dashboard_weather_in_city': 'in',
+        'dashboard_weather_forecast': 'Forecast for days:',
+        'dashboard_weather_not_found': 'City not found',
+        'dashboard_weather_no_connection': 'No connection',
+        'dashboard_currency': '💱 Currency Converter',
+        'dashboard_currency_in': 'to',
+        'dashboard_public': 'Public',
+        'dashboard_private': 'Private',
+        
+        # Search
+        'search_title': '🔍 Search Users',
+        'search_placeholder': 'Start typing nickname or name...',
+        'search_results': 'Search results:',
+        'search_visit_profile': 'Visit Profile →',
+        'search_no_results': 'Nobody found :(',
+        'search_no_bio': 'No description',
+        
+        # Public Profile
+        'public_profile_age': 'Age',
+        'public_profile_gender': 'Gender',
+        'public_profile_public_tasks': '📂 Public Tasks',
+        'public_profile_productivity': '📊 Productivity',
+        'public_profile_no_data': 'No data',
+        'public_profile_goals': '🎯 Goals',
+        'public_profile_goals_hidden': 'User has hidden their goals.',
+        
+        # Chart labels
+        'chart_completed': 'Completed',
+        'chart_in_progress': 'In Progress',
+        'chart_overdue': 'Overdue',
+    }
+}
+
+def get_translation(key, lang='ru'):
+    """Get translation for a key in specified language"""
+    return translations.get(lang, {}).get(key, key)

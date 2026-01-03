@@ -134,6 +134,29 @@ nav {
 	transform: translateY(-1px);
 }
 
+.lang-btn {
+	background: transparent !important;
+	border: 1px solid var(--border-color) !important;
+	color: var(--accent-color) !important;
+	padding: 8px 12px !important;
+	border-radius: 8px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s;
+	font-weight: 700;
+	font-size: 0.9em;
+	text-decoration: none;
+	min-width: 45px;
+}
+
+.lang-btn:hover {
+	background: var(--accent-color) !important;
+	color: white !important;
+	transform: translateY(-1px);
+}
+
 input,
 textarea,
 select {
@@ -287,7 +310,7 @@ button.btn-danger:hover {
 }
 
 .custom-checkbox.checked::after {
-	content: "✔";
+	content: "✓";
 	color: white;
 	font-size: 14px;
 	font-weight: bold;
