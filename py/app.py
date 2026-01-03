@@ -2,7 +2,7 @@ import os
 import re
 import json
 import requests
-from flask import Flask, render_template, redirect, url_for, flash, request, jsonify
+from flask import Flask, render_template, redirect, url_for, flash, request, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.utils import secure_filename
@@ -10,6 +10,7 @@ from models import db, User, Task, TaskStep
 import plotly
 import plotly.graph_objs as go
 from datetime import datetime, timezone
+from translations import get_translation, translations
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', '17236458Bb')
@@ -33,12 +34,41 @@ CURRENCY_API_KEY = "cur_live_ueS8diO0KLfVhGcwS2UWckkjoE0oXMlgpsLKkl29"
 with app.app_context():
     db.create_all()
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, int(user_id))
 
+
+def get_locale():
+    """Get current language from session or default to Russian"""
+    return session.get('lang', 'ru')
+
+
+@app.context_processor
+def inject_locale():
+    """Make translation function and current language available in all templates"""
+    lang = get_locale()
+    return dict(
+        _=lambda key: get_translation(key, lang),
+        current_lang=lang
+    )
+
+
+@app.route('/change_language')
+def change_language():
+    """Toggle language between Russian and English"""
+    current = get_locale()
+    new_lang = 'en' if current == 'ru' else 'ru'
+    session['lang'] = new_lang
+
+    # Redirect back to the page user came from
+    return redirect(request.referrer or url_for('dashboard'))
+
+
 def validate_nickname(nickname):
     return bool(re.match(r'^[a-zA-Z0-9_]+$', nickname))
+
 
 def upload_to_imgbb(file_obj):
     try:
@@ -59,7 +89,9 @@ def upload_to_imgbb(file_obj):
         print(f"Error uploading to ImgBB: {e}")
         return None
 
+
 def calculate_productivity(user_id):
+    lang = get_locale()
     tasks = Task.query.filter_by(user_id=user_id).all()
     if not tasks:
         return None
@@ -92,7 +124,11 @@ def calculate_productivity(user_id):
             else:
                 score_in_progress += remainder
 
-    labels = ["Выполнено", "В процессе", "Просрочено"]
+    labels = [
+        get_translation('chart_completed', lang),
+        get_translation('chart_in_progress', lang),
+        get_translation('chart_overdue', lang)
+    ]
     values = [score_completed, score_in_progress, score_overdue]
     colors = ["#10b981", "#facc15", "#ef4444"]
 
@@ -121,8 +157,10 @@ def calculate_productivity(user_id):
 
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    lang = get_locale()
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
     if request.method == 'POST':
@@ -131,13 +169,13 @@ def register():
         username = request.form.get('username')
 
         if not validate_nickname(nickname):
-            flash('Никнейм должен содержать только латиницу и цифры!', 'danger')
+            flash(get_translation('flash_nickname_invalid', lang), 'danger')
             return redirect(url_for('register'))
         if len(password) < 8:
-            flash('Пароль должен быть минимум 8 символов!', 'danger')
+            flash(get_translation('flash_password_short', lang), 'danger')
             return redirect(url_for('register'))
         if User.query.filter_by(nickname=nickname).first():
-            flash('Этот никнейм уже занят.', 'danger')
+            flash(get_translation('flash_nickname_taken', lang), 'danger')
             return redirect(url_for('register'))
 
         hashed_pw = generate_password_hash(password)
@@ -148,8 +186,10 @@ def register():
         return redirect(url_for('dashboard'))
     return render_template('auth.html', mode='register')
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    lang = get_locale()
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
     if request.method == 'POST':
@@ -160,8 +200,9 @@ def login():
             login_user(user)
             return redirect(url_for('dashboard'))
         else:
-            flash('Неверный ник или пароль', 'danger')
+            flash(get_translation('flash_invalid_credentials', lang), 'danger')
     return render_template('auth.html', mode='login')
+
 
 @app.route('/logout')
 @login_required
@@ -169,16 +210,19 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+
 @app.route('/delete_account', methods=['POST'])
 @login_required
 def delete_account():
+    lang = get_locale()
     user = db.session.get(User, current_user.id)
     if user:
         logout_user()
         db.session.delete(user)
         db.session.commit()
-        flash('Аккаунт удален.', 'success')
+        flash(get_translation('flash_account_deleted', lang), 'success')
     return redirect(url_for('register'))
+
 
 def get_tasks_list_data(user_id):
     tasks = Task.query.filter_by(user_id=user_id).order_by(Task.created_at.desc()).all()
@@ -192,6 +236,7 @@ def get_tasks_list_data(user_id):
             task.progress = 100 if task.completed else 0
     return tasks, now
 
+
 @app.route('/')
 @app.route('/dashboard')
 @login_required
@@ -199,6 +244,7 @@ def dashboard():
     tasks, now = get_tasks_list_data(current_user.id)
     graphJSON = calculate_productivity(current_user.id)
     return render_template('dashboard.html', tasks=tasks, graphJSON=graphJSON, now=now)
+
 
 @app.route('/dashboard/tasks_partial')
 @login_required
@@ -210,9 +256,11 @@ def dashboard_tasks_partial():
         'graphJSON': graphJSON
     })
 
+
 @app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
+    lang = get_locale()
     if request.method == 'POST':
         current_user.username = request.form.get('username')
         current_user.bio = request.form.get('bio')
@@ -220,7 +268,7 @@ def profile():
         if age: current_user.age = int(age)
         current_user.gender = request.form.get('gender')
         current_user.goals = request.form.get('goals')
-        
+
         if 'avatar' in request.files:
             file = request.files['avatar']
             if file.filename != '':
@@ -228,21 +276,24 @@ def profile():
                 if img_url:
                     current_user.avatar = img_url
                 else:
-                    flash('Ошибка при загрузке изображения', 'danger')
+                    flash(get_translation('flash_image_error', lang), 'danger')
 
         db.session.commit()
-        flash('Профиль обновлен!', 'success')
+        flash(get_translation('flash_profile_updated', lang), 'success')
         return redirect(url_for('profile'))
     return render_template('profile.html', user=current_user)
+
 
 @app.route('/search')
 @login_required
 def search():
     return render_template('search.html')
 
+
 @app.route('/api/search')
 @login_required
 def api_search():
+    lang = get_locale()
     query = request.args.get('q', '')
     if not query:
         return jsonify([])
@@ -253,14 +304,15 @@ def api_search():
             avatar_url = u.avatar
         else:
             avatar_url = url_for('static', filename='uploads/' + (u.avatar or 'default.svg'))
-            
+
         results.append({
             'username': u.username,
             'nickname': u.nickname,
-            'avatar': avatar_url, 
-            'bio': u.bio[:100] + '...' if u.bio else 'Нет описания'
+            'avatar': avatar_url,
+            'bio': u.bio[:100] + '...' if u.bio else get_translation('search_no_bio', lang)
         })
     return jsonify(results)
+
 
 @app.route('/u/<nickname>')
 @login_required
@@ -282,6 +334,7 @@ def public_profile(nickname):
 
     graphJSON = calculate_productivity(user.id)
     return render_template('public_profile.html', user=user, tasks=tasks, graphJSON=graphJSON, now=now)
+
 
 @app.route('/api/add_task', methods=['POST'])
 @login_required
@@ -316,6 +369,7 @@ def add_task():
     db.session.commit()
     return jsonify({'status': 'success'})
 
+
 @app.route('/api/toggle_step/<int:step_id>', methods=['POST'])
 @login_required
 def toggle_step(step_id):
@@ -333,6 +387,7 @@ def toggle_step(step_id):
     db.session.commit()
     return jsonify({'status': 'success'})
 
+
 @app.route('/api/toggle_task/<int:task_id>', methods=['POST'])
 @login_required
 def toggle_task(task_id):
@@ -349,16 +404,18 @@ def toggle_task(task_id):
     db.session.commit()
     return jsonify({'status': 'success'})
 
+
 @app.route('/api/toggle_task_public/<int:task_id>', methods=['POST'])
 @login_required
 def toggle_task_public(task_id):
     task = Task.query.get_or_404(task_id)
     if task.user_id != current_user.id:
         return jsonify({'error': 'Forbidden'}), 403
-    
+
     task.is_public = not task.is_public
     db.session.commit()
     return jsonify({'status': 'success'})
+
 
 @app.route('/api/get_weather')
 @login_required
@@ -370,6 +427,7 @@ def get_weather():
         return jsonify(response.json())
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 @app.route('/api/get_currency')
 @login_required
@@ -390,6 +448,7 @@ def get_currency():
         return jsonify({'error': 'Currency not found'}), 400
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_FOLDER']):

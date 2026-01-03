@@ -4,12 +4,12 @@
 		class="glass-card"
 		style="margin-bottom: 20px; width: 100%; box-sizing: border-box"
 	>
-		<h2>🔍 Поиск пользователей</h2>
+		<h2>{{ _('search_title') }}</h2>
 		<div style="position: relative">
 			<input
 				type="text"
 				id="searchInput"
-				placeholder="Начните вводить ник или имя..."
+				placeholder="{{ _('search_placeholder') }}"
 				style="margin-bottom: 0; width: 100%; padding: 15px; font-size: 1.1em"
 				autofocus
 			/>
@@ -21,7 +21,7 @@
 		id="resultsContainer"
 		style="display: none; width: 100%; box-sizing: border-box"
 	>
-		<h3>Результаты поиска:</h3>
+		<h3>{{ _('search_results') }}</h3>
 		<div
 			id="resultsList"
 			style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px"
@@ -30,6 +30,11 @@
 </div>
 
 <script>
+	const searchTranslations = {
+		visit_profile: "{{ _('search_visit_profile') }}",
+		no_results: "{{ _('search_no_results') }}"
+	};
+
 	let timeout = null;
 	const input = document.getElementById("searchInput");
 	const container = document.getElementById("resultsContainer");
@@ -61,7 +66,7 @@
                         <div style="flex-grow: 1;">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; flex-wrap: wrap; gap: 10px;">
                                 <div style="font-weight: bold; font-size: 1.3em">${user.username}</div>
-                                <a href="/u/${user.nickname}" class="btn-visit-profile">Перейти в профиль →</a>
+                                <a href="/u/${user.nickname}" class="btn-visit-profile">${searchTranslations.visit_profile}</a>
                             </div>
                             <div style="opacity: 0.7; font-size: 1em; color: var(--accent-color); margin-bottom: 10px;">@${user.nickname}</div>
                             <div style="opacity: 0.8; font-size: 0.95em; font-style: italic;">"${user.bio}"</div>
@@ -71,7 +76,7 @@
 				});
 				container.style.display = "block";
 			} else {
-				list.innerHTML = "<p>Никого не найдено :(</p>";
+				list.innerHTML = `<p>${searchTranslations.no_results}</p>`;
 				container.style.display = "block";
 			}
 		}, 300);
