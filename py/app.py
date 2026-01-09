@@ -429,7 +429,13 @@ def get_weather():
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/api/get_currency')
+@app.route('/change_language/<lang>')
+def change_language(lang):
+    """Change language to specified one"""
+    if lang in ['ru', 'en', 'uz']:
+        session['lang'] = lang
+    # Redirect back to the page user came from
+    return redirect(request.referrer or url_for('dashboard'))
 @login_required
 def get_currency():
     base = request.args.get('from', 'USD').upper()

@@ -459,3 +459,104 @@ button.btn-danger:hover {
 		grid-template-columns: 1fr;
 	}
 }
+/* Language Dropdown Styles */
+.lang-dropdown {
+	position: relative;
+	display: inline-block;
+}
+
+.lang-btn {
+	background: transparent !important;
+	border: 1px solid var(--border-color) !important;
+	color: var(--accent-color) !important;
+	padding: 8px 12px !important;
+	border-radius: 8px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s;
+	font-weight: 700;
+	font-size: 0.9em;
+	text-decoration: none;
+	min-width: 65px;
+	gap: 4px;
+}
+
+.lang-btn:hover {
+	background: var(--nav-hover-bg) !important;
+	transform: translateY(-1px);
+}
+
+.lang-dropdown-menu {
+	position: absolute;
+	top: calc(100% + 8px);
+	right: 0;
+	background: var(--card-bg);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border: 1px solid var(--border-color);
+	border-radius: 12px;
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+	padding: 8px;
+	min-width: 160px;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateY(-10px);
+	transition: all 0.3s ease;
+	z-index: 1000;
+}
+
+.lang-dropdown-menu.show {
+	opacity: 1;
+	visibility: visible;
+	transform: translateY(0);
+}
+
+.lang-dropdown-item {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 10px 14px;
+	color: var(--text-color);
+	text-decoration: none;
+	border-radius: 8px;
+	transition: all 0.2s;
+	font-size: 0.95em;
+	gap: 10px;
+}
+
+.lang-dropdown-item:hover {
+	background: var(--nav-hover-bg);
+	color: var(--accent-color);
+}
+
+.lang-dropdown-item svg {
+	color: var(--accent-color);
+	flex-shrink: 0;
+}
+
+/* Стрелка на кнопке */
+.lang-btn svg {
+	transition: transform 0.3s ease;
+}
+
+.lang-dropdown:hover .lang-btn svg {
+	transform: rotate(180deg);
+}
+
+/* Анимация появления меню */
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.lang-dropdown-menu.show {
+	animation: slideDown 0.3s ease;
+}
