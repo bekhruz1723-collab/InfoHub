@@ -55,13 +55,11 @@ def inject_locale():
     )
 
 
-@app.route('/change_language')
-def change_language():
-    """Toggle language between Russian and English"""
-    current = get_locale()
-    new_lang = 'en' if current == 'ru' else 'ru'
-    session['lang'] = new_lang
-
+@app.route('/change_language/<lang>')
+def change_language(lang):
+    """Change language to specified one"""
+    if lang in ['ru', 'en', 'uz']:
+        session['lang'] = lang
     # Redirect back to the page user came from
     return redirect(request.referrer or url_for('dashboard'))
 
@@ -429,13 +427,7 @@ def get_weather():
         return jsonify({'error': str(e)}), 500
 
 
-@app.route('/change_language/<lang>')
-def change_language(lang):
-    """Change language to specified one"""
-    if lang in ['ru', 'en', 'uz']:
-        session['lang'] = lang
-    # Redirect back to the page user came from
-    return redirect(request.referrer or url_for('dashboard'))
+@app.route('/api/get_currency')
 @login_required
 def get_currency():
     base = request.args.get('from', 'USD').upper()
