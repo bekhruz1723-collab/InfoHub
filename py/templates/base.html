@@ -62,34 +62,83 @@
 
 					<div class="lang-dropdown">
 						<button class="lang-btn" id="langBtn">
-							{% if current_lang == 'ru' %}RU
-							{% elif current_lang == 'en' %}EN
+							{% if current_lang == 'ru' %}RU {% elif current_lang == 'en' %}EN
 							{% else %}UZ{% endif %}
-							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 4px;">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								style="margin-left: 4px"
+							>
 								<polyline points="6 9 12 15 18 9"></polyline>
 							</svg>
 						</button>
 						<div class="lang-dropdown-menu" id="langMenu">
-							<a href="{{ url_for('change_language', lang='ru') }}" class="lang-dropdown-item">
+							<a
+								href="{{ url_for('change_language', lang='ru') }}"
+								class="lang-dropdown-item"
+							>
 								<span>Русский</span>
 								{% if current_lang == 'ru' %}
-								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="18"
+									height="18"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
 									<polyline points="20 6 9 17 4 12"></polyline>
 								</svg>
 								{% endif %}
 							</a>
-							<a href="{{ url_for('change_language', lang='en') }}" class="lang-dropdown-item">
+							<a
+								href="{{ url_for('change_language', lang='en') }}"
+								class="lang-dropdown-item"
+							>
 								<span>English</span>
 								{% if current_lang == 'en' %}
-								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="18"
+									height="18"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
 									<polyline points="20 6 9 17 4 12"></polyline>
 								</svg>
 								{% endif %}
 							</a>
-							<a href="{{ url_for('change_language', lang='uz') }}" class="lang-dropdown-item">
-								<span>O'zbek</span>
+							<a
+								href="{{ url_for('change_language', lang='uz') }}"
+								class="lang-dropdown-item"
+							>
+								<span>O'zbekcha</span>
 								{% if current_lang == 'uz' %}
-								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="18"
+									height="18"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								>
 									<polyline points="20 6 9 17 4 12"></polyline>
 								</svg>
 								{% endif %}
@@ -205,19 +254,19 @@
 			})();
 
 			// Language dropdown
-			const langBtn = document.getElementById('langBtn');
-			const langMenu = document.getElementById('langMenu');
+			const langBtn = document.getElementById("langBtn");
+			const langMenu = document.getElementById("langMenu");
 
 			if (langBtn && langMenu) {
-				langBtn.addEventListener('click', function(e) {
+				langBtn.addEventListener("click", function (e) {
 					e.stopPropagation();
-					langMenu.classList.toggle('show');
+					langMenu.classList.toggle("show");
 				});
 
 				// Close dropdown when clicking outside
-				document.addEventListener('click', function(e) {
+				document.addEventListener("click", function (e) {
 					if (!langBtn.contains(e.target) && !langMenu.contains(e.target)) {
-						langMenu.classList.remove('show');
+						langMenu.classList.remove("show");
 					}
 				});
 			}

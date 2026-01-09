@@ -69,6 +69,8 @@ nav {
 	align-items: center;
 	padding: 15px 0;
 	margin-bottom: 30px;
+	position: relative;
+	z-index: 1000;
 }
 
 .logo-container {
@@ -149,6 +151,8 @@ nav {
 	font-size: 0.9em;
 	text-decoration: none;
 	min-width: 45px;
+	position: relative;
+	z-index: 1000;
 }
 
 .lang-btn:hover {
@@ -492,10 +496,10 @@ button.btn-danger:hover {
 	position: absolute;
 	top: calc(100% + 8px);
 	right: 0;
-	background: var(--card-bg);
-	backdrop-filter: blur(12px);
-	-webkit-backdrop-filter: blur(12px);
-	border: 1px solid var(--border-color);
+	background: black;
+	backdrop-filter: blur(30px);
+	-webkit-backdrop-filter: blur(30px);
+	border: 2px solid var(--border-color);
 	border-radius: 12px;
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 	padding: 8px;
